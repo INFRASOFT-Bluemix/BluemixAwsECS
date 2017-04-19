@@ -13,6 +13,7 @@ import os
 access_key = os.environ['AWS_ACCESS_KEY_ID']
 secret_key = os.environ['AWS_SECRET_ACCESS_KEY']
 region = os.environ['AWS_DEFAULT_REGION']
+cluster_name = os.environ['CLUSTER_NAME']
 
 # ECS Details
 
@@ -37,21 +38,22 @@ def test_main():
     'ecs',
     aws_access_key_id=access_key,
     aws_secret_access_key=secret_key,
-    region_name="ap-southeast-2"
+    region_name=region
   )
   
   response = client.list_tasks(
-    cluster="cluster-poc",
+    cluster=cluster_name,
     desiredStatus='RUNNING'
   )
   
-  task_arn = response['taskArns'][0]
+  if len(response['taskArns']):  
+    task_arn = response['taskArns'][0]
   
-  response = client.stop_task(
-    cluster="cluster-poc",
-    task=task_arn,
-    reason='Stop by BMX'
-  )
+    response = client.stop_task(
+      cluster="cluster-poc",
+      task=task_arn,
+      reason='Stop by BMX'
+    )
 
   msg = "Task Stop"
 	  
