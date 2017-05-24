@@ -50,7 +50,7 @@ def test_main():
     task_arn = response['taskArns'][0]
   
     response = client.stop_task(
-      cluster="cluster-poc",
+      cluster=cluster_name,
       task=task_arn,
       reason='Stop by BMX'
     )
