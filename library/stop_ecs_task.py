@@ -14,6 +14,7 @@ access_key = os.environ['AWS_ACCESS_KEY_ID']
 secret_key = os.environ['AWS_SECRET_ACCESS_KEY']
 region = os.environ['AWS_DEFAULT_REGION']
 cluster_name = os.environ['CLUSTER_NAME']
+td_name = os.environ['TASK_DEFINITION']
 
 # ECS Details
 
@@ -43,6 +44,7 @@ def test_main():
   
   response = client.list_tasks(
     cluster=cluster_name,
+    family=td_name,
     desiredStatus='RUNNING'
   )
   
