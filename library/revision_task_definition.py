@@ -41,6 +41,28 @@ def main():
     aws_secret_access_key=secret_key,
     region_name=region
   )
+  
+  response = client.describe_task_definition(
+    taskDefinition=td_name,
+  )
+
+  memory = 512
+  portMappings = [
+      {
+        "hostPort":80,
+        "containerPort":8081,
+        "protocol":"tcp"
+      }
+  ]
+  entryPoint = [
+        "java", "-Djava.security.egd=file:/dev/./urandom", "-jar", "/app.jar", "--server.port=8081"
+  ]
+
+  if len(response['taskDefinition']['containerDefinitions']):
+    cd = response['taskDefinition']['containerDefinitions'][0]
+    memory = cd['memory']
+    portMappings = cd['portMappings']
+    entryPoint = cd['entryPoint']
 
   response = client.register_task_definition(
     family=td_name,
@@ -48,19 +70,11 @@ def main():
     {
       "name":td_name,
       "image":image_name,
-      "memory":512,
-      "portMappings":[
-      {
-        "hostPort":80,
-        "containerPort":8081,
-        "protocol":"tcp"
-      }],
+      "memory":memory,
+      "portMappings":portMappings,
       "essential":True,
-      "entryPoint":
-      [
-        "java", "-Djava.security.egd=file:/dev/./urandom", "-jar", "/app.jar", "--server.port=8081"
-      ],
-      "cpu":0 
+      "entryPoint":entryPoint,
+      "cpu":0
     }]
   )
 
